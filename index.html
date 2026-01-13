@@ -21,7 +21,7 @@ body {
   position: relative;
 }
 
-/* LUNY ŚWIATŁA */
+
 body::before,
 body::after {
   content: "";
@@ -44,14 +44,14 @@ body::after {
   right: -200px;
 }
 
-/* CANVAS GWIAZDY */
+
 canvas {
   position: fixed;
   inset: 0;
   z-index: -1;
 }
 
-/* VIGNETTE */
+
 .vignette {
   position: fixed;
   inset: 0;
@@ -64,7 +64,7 @@ canvas {
   z-index: 2;
 }
 
-/* SCANLINES VHS */
+
 .scanlines {
   position: fixed;
   inset: 0;
@@ -92,7 +92,7 @@ canvas {
   backdrop-filter: blur(6px);
 }
 
-/* NEONOWE ROGI */
+
 .container::before,
 .container::after {
   content: "";
@@ -128,7 +128,7 @@ h1 {
   margin-bottom: 35px;
 }
 
-/* LINKI */
+
 .link {
   display: block;
   margin: 22px 0;
@@ -151,7 +151,7 @@ h1 {
   opacity: 0.7;
 }
 
-/* TOGGLE */
+
 .toggle {
   border: 2px solid #6f7cff;
   padding: 16px;
@@ -180,16 +180,16 @@ h1 {
   color: #cfd8ff;
 }
 
-/* PO OTWARCIU – SCROLL */
+
 .content.open {
-  max-height: 420px;       /* wysokość boxa */
-  overflow-y: auto;        /* SCROLLOWANIE */
+  max-height: 420px;       
+  overflow-y: auto;       
   opacity: 1;
   transform: translateY(0);
   padding: 18px;
 }
 
-/* NEONOWY SCROLLBAR */
+
 .content.open::-webkit-scrollbar {
   width: 6px;
 }
