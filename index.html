@@ -1,0 +1,388 @@
+<!DOCTYPE html> 
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HimmelVapes</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: black;
+  color: #cfd8ff;
+  font-family: 'Orbitron', sans-serif;
+  text-align: center;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* LUNY ŚWIATŁA */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(120,140,255,0.35), transparent 70%);
+  z-index: -2;
+  filter: blur(40px);
+  pointer-events: none;
+}
+
+body::before {
+  top: -200px;
+  left: -200px;
+}
+
+body::after {
+  bottom: -200px;
+  right: -200px;
+}
+
+/* CANVAS GWIAZDY */
+canvas {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+}
+
+/* VIGNETTE */
+.vignette {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0,0,0,0) 55%,
+    rgba(0,0,0,0.6) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* SCANLINES VHS */
+.scanlines {
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.02),
+    rgba(255,255,255,0.02) 1px,
+    rgba(0,0,0,0) 2px,
+    rgba(0,0,0,0) 4px
+  );
+  pointer-events: none;
+  z-index: 3;
+  mix-blend-mode: overlay;
+}
+
+.container {
+  max-width: 420px;
+  margin: auto;
+  padding: 30px 20px;
+  position: relative;
+  border: 1px solid rgba(120,140,255,0.35);
+  box-shadow:
+    0 0 25px rgba(90,110,255,0.25),
+    inset 0 0 30px rgba(90,110,255,0.15);
+  backdrop-filter: blur(6px);
+}
+
+/* NEONOWE ROGI */
+.container::before,
+.container::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #7f8cff;
+}
+
+.container::before {
+  top: -2px;
+  left: -2px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.container::after {
+  bottom: -2px;
+  right: -2px;
+  border-left: none;
+  border-top: none;
+}
+
+.logo img {
+  width: 190px;
+  margin: 20px auto;
+  filter: drop-shadow(0 0 15px #6f7cff);
+}
+
+h1 {
+  color: #8fa2ff;
+  text-shadow: 0 0 12px #6f7cff;
+  margin-bottom: 35px;
+}
+
+/* LINKI */
+.link {
+  display: block;
+  margin: 22px 0;
+  font-size: 22px;
+  text-decoration: none;
+  color: #8fd3ff;
+  text-shadow: 0 0 10px #4aa3ff;
+  transition: transform 0.3s ease, text-shadow 0.3s ease;
+}
+
+.link:hover {
+  transform: scale(1.06);
+  text-shadow: 0 0 18px #7aa2ff, 0 0 30px #5a6bff;
+}
+
+.link small {
+  display: block;
+  font-size: 12px;
+  margin-top: 10px;
+  opacity: 0.7;
+}
+
+/* TOGGLE */
+.toggle {
+  border: 2px solid #6f7cff;
+  padding: 16px;
+  margin: 20px 0;
+  cursor: pointer;
+  font-size: 16px;
+  color: #dfe4ff;
+  box-shadow: 0 0 12px rgba(111,124,255,0.6);
+  transition: all 0.35s ease;
+}
+
+.toggle:hover {
+  box-shadow: 0 0 20px #7f8cff, 0 0 35px #4a5bff;
+  transform: translateY(-2px);
+}
+
+.content {
+  max-height: 0;
+  overflow-y: hidden;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: max-height 0.7s ease, opacity 0.6s ease, transform 0.6s ease;
+  border: 1px solid #3a3f7a;
+  padding: 0 18px;
+  font-size: 13px;
+  color: #cfd8ff;
+}
+
+/* PO OTWARCIU – SCROLL */
+.content.open {
+  max-height: 420px;       /* wysokość boxa */
+  overflow-y: auto;        /* SCROLLOWANIE */
+  opacity: 1;
+  transform: translateY(0);
+  padding: 18px;
+}
+
+/* NEONOWY SCROLLBAR */
+.content.open::-webkit-scrollbar {
+  width: 6px;
+}
+
+.content.open::-webkit-scrollbar-thumb {
+  background: #6f7cff;
+  border-radius: 6px;
+  box-shadow: 0 0 10px #6f7cff;
+}
+
+.content.open::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.4);
+}
+
+.content {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  letter-spacing: 0.3px;
+  text-align: left;
+}
+
+.content div {
+  margin-bottom: 6px;
+}
+
+.content .media {
+  width: 100%;
+  margin-top: 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(120,140,255,0.35);
+  box-shadow: 0 0 15px rgba(90,110,255,0.35);
+}
+
+</style>
+</head>
+
+<body>
+
+<canvas id="stars"></canvas>
+
+<div class="container">
+
+  <div class="logo">
+    <img src="logo.jpg" alt="logo">
+  </div>
+
+  <h1>HimmelVapes</h1>
+
+  <a class="link" href="https://t.me/+GbCBl8GdgOY0NmFk">TELEGRAM<small>@Himmell95</small></a>
+  <a class="link" href="https://services.zangi.com/dl/conversation/3038913920">ZANGI<small></small></a>
+  <a class="link" href="https://www.instagram.com/himmell95?igsh=a2hkeW05Y2JoeDRw">INSTAGRAM</a>
+  <a class="link" href="https://signal.group/#CjQKIGoraCjGaTlV6r4zpQwbad5hxOOYPz848Enz9yRvXRjNEhAPJ65WEWyfYq0Mg6OUD-pC">SIGNAL<small></small></a>
+
+  <div class="toggle" onclick="toggle('oferta')">OFERTA</div>
+  <div class="content" id="oferta">
+  <div>Airmez matrix pro 30k</div>
+  <div>SMAKI ❤️ 5%</div>
+  <div>Strawberry ice</div>
+  <div>Blueberry on ice</div>
+  <div>Strawberry kiwi</div>
+  <div>Cherry cola</div>
+  <div>Kiwi passion fruit</div>
+  <div>Lemon & lime</div>
+  <div>Blue sour raspberry</div>
+  <div>Fruit watermelon</div>
+  <div>Ice mixed berries</div>
+  <div>25g 5mg peach ice</div>
+  <div>Strawberry grape</div>
+  <div>Raspberry watermelon</div>
+  <div>Blueberry raspberry</div>
+  <div>Strawberry ice</div>
+  <div>Watermelon ice</div>
+  <div>Cherry peach lemonade</div>
+  <div>Strawberry mango</div>
+  <img src="oferta.jpg" class="media" alt="oferta">
+ <div> Airmez Tornado 25k</div>
+
+<div>👅SMAKI👅</div>
+<div>5%</div>
+<div>Cherry</div>
+<div>Sour apple</div>
+<div>Dragon fruit ice</div>
+<div>Lemon & Lime</div>
+<div>Triple berry</div>
+<div>Berry lemonade</div>
+<div>Peach ice</div>
+<div>Grape ice</div>
+<div>Lush ice</div>
+<div>Mixed berries</div>
+<div>Strawberry ice</div>
+<div>Peach mango</div>
+<div>Blueberry on ice</div>
+<div>Kiwi passion fruit guava </div>
+<div>Strawberry watermelon</div>
+<img src="oferta2.jpg" class="media" alt="oferta2">
+</div>
+
+  <div class="toggle" onclick="toggle('promo')">PROMOCJE</div>
+  <div class="content" id="promo">SOON</div>
+
+  <div class="toggle" onclick="toggle('zam')">JAK ZAMAWIAĆ</div>
+  <div class="content" id="zam"><div>❗️Uwaga ❗️</div>
+
+<div>Jeśli wysyłasz dane do wysyłki stosujesz się do tego wzoru, wysyłasz wszystko w jednej wiadomości, to znacznie ułatwi nam pracę </div>
+
+<div>Do wyboru masz 2 opcje </div>
+
+<div>⋆ Opcja A: Dostawa kurierem 🚚 </div>
+
+<div>Imię nazwisko </div>
+<div>Miasto z kodem pocztowym </div>
+<div>Ulica, nr domu </div>
+<div>Nr tel </div>
+<div>Adres e-mail (opcjonalnie do sledzenia przesyłki)</div>
+
+<div>⋆ Opcja B: Paczkomat 📦</div>
+
+<div>Kod paczkomatu </div>
+<div>Nr tel</div>
+<div>Adres e-mail </div>
+
+<div>⋆ Tak samo odnośnie zamówień, wysyłasz również wszystko w jednej wiadomości ‼️‼️‼️</div>
+
+<div>-Przykładowy wzór zamówienia:</div>
+
+<div>Airmez matrix 50szt.</div>
+
+<div>Watermelon ice- 10szt</div>
+<div>Cherry peach lemonade- 20szt.</div>
+<div>Strawberry mango- 10szt</div>
+<div>Mr blue- 10szt </div>
+
+<div>⋆ OPCJA A</div>
+<div>Tomek Kowalski </div>
+<div>00-001 Warszawa </div>
+<div>Ul. Złota 44/44</div>
+<div>Tel:666 666 666</div>
+<div>Adres e mail: kowalski66@wp.pl</div>
+
+<div>⋆ OPCJA B</div>
+<div>Kod paczkomatu:WAW123A</div>
+<div>Tel:666 666 666</div>
+<div>Adres e mail: kowalski66@wp.pl</div>
+</div>
+
+</div>
+
+<div class="vignette"></div>
+<div class="scanlines"></div>
+
+<script>
+function toggle(id) {
+  document.getElementById(id).classList.toggle("open");
+}
+
+/* GWIAZDY */
+const canvas = document.getElementById("stars");
+const ctx = canvas.getContext("2d");
+
+let stars = [];
+const STAR_COUNT = 140;
+
+function resize() {
+  canvas.width = innerWidth;
+  canvas.height = innerHeight;
+}
+window.addEventListener("resize", resize);
+resize();
+
+for (let i = 0; i < STAR_COUNT; i++) {
+  stars.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 1.5 + 0.5,
+    s: Math.random() * 0.5 + 0.2
+  });
+}
+
+function animate() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = "rgba(180,190,255,0.9)";
+  stars.forEach(star => {
+    star.y += star.s;
+    if (star.y > canvas.height) star.y = 0;
+    ctx.beginPath();
+    ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+    ctx.fill();
+  });
+  requestAnimationFrame(animate);
+}
+animate();
+</script>
+
+</body>
+</html>
